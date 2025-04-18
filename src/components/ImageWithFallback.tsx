@@ -17,7 +17,7 @@ export default function ImageWithFallback({ src, alt, width, height, className}:
             width={width}
             height={height}
             className={className}
-            onError={() => setImgSrc('/placeholder-image.jpg')}
+            onError={() => setImgSrc('https://placehold.co/400')}
             unoptimized
         />
     );

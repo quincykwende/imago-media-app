@@ -108,7 +108,7 @@ export default function Home() {
                   <input
                       type="text"
                       placeholder="Search keywords..."
-                      className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder:text-gray-400"
+                      className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder:text-gray-500"
                       value={searchParams.query}
                       onChange={(e) => handleInputChange('query', e.target.value)}
                   />
@@ -122,7 +122,7 @@ export default function Home() {
                   <input
                       type="text"
                       placeholder="Photographer..."
-                      className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder:text-gray-400"
+                      className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder:text-gray-500"
                       value={searchParams.photographer || ''}
                       onChange={(e) => handleInputChange('photographer', e.target.value)}
                   />
@@ -137,13 +137,13 @@ export default function Home() {
                 <div className="grid grid-cols-2 gap-2">
                   <input
                       type="date"
-                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder:text-gray-400"
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder:text-gray-500"
                       value={searchParams.from_date || ''}
                       onChange={(e) => handleInputChange('from_date', e.target.value)}
                   />
                   <input
                       type="date"
-                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder:text-gray-400"
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder:text-gray-500"
                       value={searchParams.to_date || ''}
                       onChange={(e) => handleInputChange('to_date', e.target.value)}
                   />
