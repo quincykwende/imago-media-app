@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "imago-media-app",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.2",
     "@heroicons/react": "^2.2.0",
     "axios": "^1.8.4",
     "dayjs": "^1.11.13",

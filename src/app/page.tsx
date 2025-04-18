@@ -1,103 +1,160 @@
-import Image from "next/image";
+'use client';
+import { useState } from 'react';
+import { MagnifyingGlassIcon, UserCircleIcon, CalendarIcon } from '@heroicons/react/24/outline';
+import { searchMedia } from '@/lib/api';
+import { MediaItem } from '@/types/media';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [searchTerm, setSearchTerm] = useState('');
+  const [photographer, setPhotographer] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [results, setResults] = useState<MediaItem[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const handleSearch = async (newPage: number = 1) => {
+    try {
+      setLoading(true);
+      const response = await searchMedia({
+        query: searchTerm,
+        photographer,
+        from_date: startDate,
+        to_date: endDate,
+        page: newPage,
+        size: 12
+      });
+
+      if (newPage === 1) {
+        setResults(response.data.results);
+      } else {
+        setResults(prev => [...prev, ...response.data.results]);
+      }
+      setTotal(response.data.count);
+      setPage(newPage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+      <main className="min-h-screen bg-gray-50 p-8">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-4xl font-bold text-gray-900 mb-8">IMAGO Media Search</h1>
+
+          {/* Search Form */}
+          <div className="bg-white rounded-xl p-6 shadow-lg mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              {/* Search Term Input */}
+              <div className="relative">
+                <MagnifyingGlassIcon className="h-5 w-5 absolute left-3 top-4 text-gray-400" />
+                <input
+                    type="text"
+                    placeholder="Search keywords..."
+                    className="input-field pl-10"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+
+              {/* Photographer Filter */}
+              <div className="relative">
+                <UserCircleIcon className="h-5 w-5 absolute left-3 top-4 text-gray-400" />
+                <input
+                    type="text"
+                    placeholder="Photographer..."
+                    className="input-field pl-10"
+                    value={photographer}
+                    onChange={(e) => setPhotographer(e.target.value)}
+                />
+              </div>
+
+              {/* Date Range */}
+              <div className="flex gap-4">
+                <div className="relative flex-1">
+                  <CalendarIcon className="h-5 w-5 absolute left-3 top-4 text-gray-400" />
+                  <input
+                      type="date"
+                      className="input-field pl-10"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                  />
+                </div>
+                <div className="relative flex-1">
+                  <CalendarIcon className="h-5 w-5 absolute left-3 top-4 text-gray-400" />
+                  <input
+                      type="date"
+                      className="input-field pl-10"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <button
+                onClick={() => handleSearch(1)}
+                disabled={loading}
+                className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition-colors"
+            >
+              {loading ? 'Searching...' : 'Search Media'}
+            </button>
+          </div>
+
+          {/* Results Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {results.map((item) => (
+                <div key={item.id} className="card">
+                  <img
+                      src={item.image}
+                      alt={item.title}
+                      className="w-full h-48 object-cover bg-gray-100"
+                      loading="lazy"
+                      onError={(e) => {
+                        e.currentTarget.src = '/placeholder-image.jpg';
+                        e.currentTarget.classList.remove('bg-gray-100');
+                      }}
+                  />
+                  <div className="p-4">
+                    <h3 className="font-semibold text-gray-900 truncate">{item.title}</h3>
+                    <div className="mt-2 text-sm text-gray-600 space-y-1">
+                      {item.metadata.photographer && (
+                          <p className="flex items-center">
+                            <UserCircleIcon className="h-4 w-4 mr-2" />
+                            {item.metadata.photographer}
+                          </p>
+                      )}
+                      {item.metadata.date && (
+                          <p className="flex items-center">
+                            <CalendarIcon className="h-4 w-4 mr-2" />
+                            {new Date(item.metadata.date).toLocaleDateString()}
+                          </p>
+                      )}
+                      {item.metadata.copyright && (
+                          <p className="text-xs text-gray-500 mt-2">
+                            © {item.metadata.copyright}
+                          </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+            ))}
+          </div>
+
+          {/* Pagination */}
+          {total > results.length && (
+              <div className="mt-8 flex justify-center">
+                <button
+                    onClick={() => handleSearch(page + 1)}
+                    disabled={loading}
+                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition-colors"
+                >
+                  {loading ? 'Loading...' : 'Load More'}
+                </button>
+              </div>
+          )}
         </div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
   );
 }
