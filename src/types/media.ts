@@ -19,3 +19,12 @@ export interface SearchResponse {
     results: MediaItem[];
     next_page?: number;
 }
+
+export interface SearchParams {
+    query?: string;
+    photographer?: string;
+    from_date?: string;
+    to_date?: string;
+    page?: number;
+    size?: number;
+}
